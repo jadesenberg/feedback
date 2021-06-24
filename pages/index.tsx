@@ -1,63 +1,53 @@
-import Head from "next/head";
-import styles from "../styles/Home.module.css";
+import Head from 'next/head';
+import { Button, Flex, Text } from '@chakra-ui/react';
+import { useAuth } from 'lib/auth';
+import { ChatIcon } from '@chakra-ui/icons';
 
-export default function Home() {
+export default function Home(): React.ReactElement {
+  const auth = useAuth();
+  console.log({ auth });
   return (
-    <div className={styles.container}>
+    <Flex
+      as="main"
+      direction="column"
+      align="center"
+      justify="center"
+      h="100vh"
+      maxW="400px"
+      m="0 auto"
+    >
       <Head>
-        <title>Create Next App</title>
-        <link rel="icon" href="/favicon.ico" />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+          if (document.cookie && document.cookie.includes('feedback-auth')) {
+            window.location.href = "/dashboard"
+          }
+        `
+          }}
+        />
+        <title>Feedback</title>
       </Head>
 
-      <main className={styles.main}>
-        <h1 className={styles.title}>Jade Feedback App</h1>
+      <ChatIcon fontSize="64px" />
+      <Text mb={2}>
+        <Text as="span" fontWeight="bold" display="inline">{`Feedback`}</Text>
+        {` is the easiest way to add comments or reviews to your static site`}
+      </Text>
+      {!auth?.user && (
+        <Button mt={2} size="sm" onClick={() => auth.signinWithGitHub()}>
+          Sign in
+        </Button>
+      )}
 
-        <p className={styles.description}>
-          Get started by editing{" "}
-          <code className={styles.code}>pages/index.js</code>
-        </p>
-
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h3>Documentation &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/master/examples"
-            className={styles.card}
-          >
-            <h3>Examples &rarr;</h3>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/import?filter=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h3>Deploy &rarr;</h3>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
-        </div>
-      </main>
-
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{" "}
-          <img src="/vercel.svg" alt="Vercel Logo" className={styles.logo} />
-        </a>
-      </footer>
-    </div>
+      {auth?.user && (
+        //<Button mt={4} size="sm" onClick={() => auth.signout()}>
+        <Button mt={2} size="md">
+          <Button as="a" size="sm" fontWeight="medium" href="/dashboard">
+            View Dashboard
+          </Button>
+        </Button>
+      )}
+    </Flex>
   );
 }
